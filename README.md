@@ -33,6 +33,7 @@ FRONTEND_URL=https://degaanrealestate.com
 ## Running Locally
 
 ```bash
+cp .env.example .env
 python manage.py migrate
 python manage.py runserver
 ```
@@ -89,11 +90,13 @@ Access at http://localhost:8000/admin/
 
 ## Deployment on Railway
 
-```bash
-git push  # Pushes to GitHub
-# Railway auto-builds from requirements.txt
-# Runs: gunicorn degaan.wsgi:application
-```
+1. Link a Railway PostgreSQL service so `DATABASE_URL` is available.
+2. Set `SECRET_KEY`, `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, and `SITE_URL`.
+3. Optionally set `SENDGRID_API_KEY` to enable email delivery.
+4. Deploy the repository. The `Procfile` runs migrations, collects static files,
+   and starts Gunicorn automatically.
+
+Railway can use `/health/` as the service health-check endpoint.
 
 ## Database Migrations
 

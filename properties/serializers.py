@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Property, Lead, Project
+from .models import Property, Project
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -11,23 +11,6 @@ class PropertySerializer(serializers.ModelSerializer):
             'features', 'status', 'images', 'created_date', 'updated_date'
         ]
         read_only_fields = ['id', 'created_date', 'updated_date']
-
-
-class LeadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lead
-        fields = [
-            'id', 'name', 'email', 'phone', 'interest_type',
-            'property', 'message', 'status', 'source', 'created_date'
-        ]
-        read_only_fields = ['id', 'created_date', 'status', 'source']
-
-    def create(self, validated_data):
-        lead = Lead.objects.create(**validated_data)
-        lead.send_confirmation_email()
-        return lead
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     properties_count = serializers.SerializerMethodField()
 
