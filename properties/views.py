@@ -1,15 +1,22 @@
-from rest_framework import viewsets, filters, status
+from rest_framework import filters, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Property, Lead, Project
-from .serializers import PropertySerializer, LeadSerializer, ProjectSerializer
-from .emails import send_lead_notification_email
+from .models import Property, Project
+from .serializers import PropertySerializer, ProjectSerializer
 
 
-class PropertyViewSet(viewsets.ModelViewSet):
+class PublicReadAdminWriteMixin:
+    def get_permissions(self):
+        if self.action in ('list', 'retrieve', 'featured', 'similar', 'properties'):
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+
+class PropertyViewSet(PublicReadAdminWriteMixin, viewsets.ModelViewSet):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -54,59 +61,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
         ).exclude(id=property.id)[:4]
         serializer = self.get_serializer(similar, many=True)
         return Response(serializer.data)
-
-
-class LeadViewSet(viewsets.ModelViewSet):
-    queryset = Lead.objects.all()
-    serializer_class = LeadSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['status', 'interest_type', 'source']
-    ordering = ['-created_date']
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        # Send notification email
-        lead = serializer.instance
-        send_lead_notification_email(lead)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @action(detail=False, methods=['post'])
-    def bulk_status_update(self, request):
-        """Update status for multiple leads"""
-        lead_ids = request.data.get('lead_ids', [])
-        new_status = request.data.get('status')
-
-        if not lead_ids or not new_status:
-            return Response(
-                {'error': 'lead_ids and status are required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        Lead.objects.filter(id__in=lead_ids).update(status=new_status)
-        return Response({'success': f'Updated {len(lead_ids)} leads'})
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Get lead statistics"""
-        total = Lead.objects.count()
-        new = Lead.objects.filter(status='new').count()
-        contacted = Lead.objects.filter(status='contacted').count()
-        converted = Lead.objects.filter(status='converted').count()
-
-        return Response({
-            'total': total,
-            'new': new,
-            'contacted': contacted,
-            'converted': converted,
-            'conversion_rate': (converted / total * 100) if total > 0 else 0
-        })
-
-
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(PublicReadAdminWriteMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
