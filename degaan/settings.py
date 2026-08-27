@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'properties.apps.PropertiesConfig',
     'leads.apps.LeadsConfig',
+    'insights.apps.InsightsConfig',
 ]
 
 MIDDLEWARE = [
