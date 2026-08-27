@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from rest_framework.routers import DefaultRouter
 from properties.views import PropertyViewSet, ProjectViewSet
 from leads.views import LeadViewSet
+from insights.views import InsightViewSet
 
 
 def health_check(request):
@@ -15,6 +16,7 @@ router = DefaultRouter()
 router.register(r'properties', PropertyViewSet)
 router.register(r'leads', LeadViewSet)
 router.register(r'projects', ProjectViewSet)
+router.register(r'insights', InsightViewSet, basename='insight')
 
 urlpatterns = [
     path('health/', health_check, name='health-check'),

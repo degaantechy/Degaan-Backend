@@ -7,6 +7,7 @@ Django REST Framework backend for Degaan Real Estate platform.
 - Property management API
 - Lead capture and CRM
 - Project management
+- Bilingual market insights and news publishing
 - Admin dashboard
 - Email notifications
 - PostgreSQL database
@@ -67,6 +68,14 @@ Access at http://localhost:8000/admin/
 - `GET /api/projects/` - List projects
 - `GET /api/projects/{id}/` - Get project detail
 - `GET /api/projects/{id}/properties/` - Get project properties
+
+### Insights
+- `GET /api/insights/` - List published insights
+- `GET /api/insights/{slug}/` - Get a published insight
+- `GET /api/insights/?category=market` - Filter insights by category
+- `GET /api/insights/?featured=true` - List featured insights
+
+Insights are created and published from `/admin/` under **Insights and Articles**.
 
 ## Database Models
 
