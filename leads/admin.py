@@ -6,20 +6,32 @@ from .models import Lead
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'email', 'phone', 'interest_type',
-        'status', 'source', 'created_date',
+        'name', 'phone', 'interest_type', 'project_slug', 'service',
+        'budget_range', 'status', 'source', 'created_date',
     ]
-    list_filter = ['status', 'interest_type', 'source', 'created_date']
-    search_fields = ['name', 'email', 'phone', 'message']
+    list_filter = [
+        'status', 'interest_type', 'service', 'source',
+        'utm_source', 'utm_campaign', 'created_date',
+    ]
+    search_fields = [
+        'name', 'email', 'phone', 'message', 'project_slug',
+        'service', 'source_page', 'utm_source', 'utm_campaign',
+    ]
     readonly_fields = ['created_date', 'updated_date', 'source']
 
     fieldsets = (
-        ('Contact Info', {'fields': ('name', 'email', 'phone')}),
+        ('Contact Info', {'fields': ('name', 'email', 'phone', 'preferred_contact')}),
         ('Inquiry Details', {
-            'fields': ('interest_type', 'property', 'message', 'status'),
+            'fields': (
+                'interest_type', 'property', 'project_slug', 'service',
+                'unit_type', 'budget_range', 'message', 'status',
+            ),
         }),
-        ('Tracking', {
-            'fields': ('source', 'created_date', 'updated_date'),
+        ('Attribution', {
+            'fields': (
+                'source', 'source_page', 'utm_source', 'utm_medium',
+                'utm_campaign', 'created_date', 'updated_date',
+            ),
             'classes': ('collapse',),
         }),
     )
