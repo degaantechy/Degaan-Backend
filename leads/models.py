@@ -9,6 +9,9 @@ class Lead(models.Model):
         ('sell', 'Sell Property'),
         ('construction', 'Construction'),
         ('investment', 'Investment'),
+        ('development', 'Development / Project Interest'),
+        ('valuation', 'Property Valuation'),
+        ('landowner', 'Landowner / Joint Development'),
     ]
 
     STATUS_CHOICES = [
@@ -33,6 +36,18 @@ class Lead(models.Model):
     message = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     source = models.CharField(max_length=100, blank=True, default='website')
+
+    # Website attribution and qualification fields.
+    project_slug = models.CharField(max_length=120, blank=True)
+    service = models.CharField(max_length=120, blank=True)
+    source_page = models.CharField(max_length=255, blank=True)
+    utm_source = models.CharField(max_length=120, blank=True)
+    utm_medium = models.CharField(max_length=120, blank=True)
+    utm_campaign = models.CharField(max_length=120, blank=True)
+    budget_range = models.CharField(max_length=100, blank=True)
+    preferred_contact = models.CharField(max_length=100, blank=True)
+    unit_type = models.CharField(max_length=100, blank=True)
+
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
